@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prom.voca — 말해보카 브라우저 확장 프로그램</title>
 <style>
-@font-face{font-family:"Wanted Sans";src:url(fonts/WantedSans-Regular.woff2) format("woff2");font-weight:400;font-display:swap}
-@font-face{font-family:"Wanted Sans";src:url(fonts/WantedSans-Medium.woff2) format("woff2");font-weight:500;font-display:swap}
-@font-face{font-family:"Wanted Sans";src:url(fonts/WantedSans-SemiBold.woff2) format("woff2");font-weight:600;font-display:swap}
-@font-face{font-family:"Wanted Sans";src:url(fonts/WantedSans-Bold.woff2) format("woff2");font-weight:700;font-display:swap}
-@font-face{font-family:"Wanted Sans";src:url(fonts/WantedSans-ExtraBold.woff2) format("woff2");font-weight:800;font-display:swap}
-@font-face{font-family:"Wanted Sans";src:url(fonts/WantedSans-Black.woff2) format("woff2");font-weight:900;font-display:swap}
-@font-face{font-family:"Wanted Sans";src:url(fonts/WantedSans-ExtraBlack.woff2) format("woff2");font-weight:950;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(WantedSans-Regular.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(WantedSans-Medium.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(WantedSans-SemiBold.woff2) format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(WantedSans-Bold.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(WantedSans-ExtraBold.woff2) format("woff2");font-weight:800;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(WantedSans-Black.woff2) format("woff2");font-weight:900;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(WantedSans-ExtraBlack.woff2) format("woff2");font-weight:950;font-display:swap}
 
 :root{--ease:cubic-bezier(.16,1,.3,1);--z:1}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -122,11 +122,11 @@ img{display:block;max-width:none}
 </head>
 <body>
 <header class="hero" aria-label="Prom.voca">
-  <div class="hero-zoom"><img class="hero-bg" src="assets/hero-bg.webp" alt="노트북에서 Prom.voca 확장 프로그램을 사용하는 모습"></div>
+  <div class="hero-zoom"><img class="hero-bg" src="hero-bg.webp" alt="노트북에서 Prom.voca 확장 프로그램을 사용하는 모습"></div>
   <div class="hero-shade"></div>
   <div class="hero-brand">
-    <h1><img class="hero-logo" src="assets/hero-logo.webp" alt="Prom.voca" width="1396" height="242"></h1>
-    <img class="hero-mark" src="assets/hero-mark.webp" alt="" width="212" height="66">
+    <h1><img class="hero-logo" src="hero-logo.webp" alt="Prom.voca" width="1396" height="242"></h1>
+    <img class="hero-mark" src="hero-mark.webp" alt="" width="212" height="66">
   </div>
 </header>
 <div id="frame">
@@ -141,13 +141,13 @@ img{display:block;max-width:none}
 
   <!-- cards row -->
   <section class="abs" style="left:100px;top:2091px;width:1720px;height:638px">
-    <img class="abs card70" data-a="img" src="assets/card-ui.webp" alt="" width="467" height="638" style="left:0;top:0">
+    <img class="abs card70" data-a="img" src="card-ui.webp" alt="" width="467" height="638" style="left:0;top:0">
     <div class="abs card70" data-a="img" style="--d:.15s;left:525px;top:0;width:1195px;height:638px">
-      <img src="assets/bunny.webp" alt="핑크색 토끼 이미지" width="1195" height="638">
+      <img src="bunny.webp" alt="핑크색 토끼 이미지" width="1195" height="638">
       <div class="abs" style="left:54px;top:225.95px;display:flex;align-items:center;gap:10.22px">
         <span class="chip" data-a="pop" style="--d:.5s">Studio</span>
         <span class="chip" data-a="pop" style="--d:.58s">portrait of</span>
-        <span class="star" data-a="pop" style="--d:.66s"><img src="assets/star.webp" alt=""><span>Pastel pink</span></span>
+        <span class="star" data-a="pop" style="--d:.66s"><img src="star.webp" alt=""><span>Pastel pink</span></span>
         <span class="chip" data-a="pop" style="--d:.74s">bunny</span>
         <span class="chip" data-a="pop" style="--d:.82s">soft lighting</span>
         <span class="chip" data-a="pop" style="--d:.9s">minimalist</span>
@@ -167,10 +167,10 @@ img{display:block;max-width:none}
       </div>
     </div>
     <div class="card70" data-a="clip" style="position:relative;width:1720px;height:697px;background:#1d1d1d">
-      <div class="eco" style="left:0"><img src="assets/eco-marketing.webp" alt="" ></div>
-      <div class="eco" style="left:430px"><img src="assets/eco-pop.webp" alt=""></div>
-      <div class="eco" style="left:860px"><img src="assets/eco-fineart.webp" alt=""></div>
-      <div class="eco" style="left:1290px"><img src="assets/eco-fashion.webp" alt=""></div>
+      <div class="eco" style="left:0"><img src="eco-marketing.webp" alt="" ></div>
+      <div class="eco" style="left:430px"><img src="eco-pop.webp" alt=""></div>
+      <div class="eco" style="left:860px"><img src="eco-fineart.webp" alt=""></div>
+      <div class="eco" style="left:1290px"><img src="eco-fashion.webp" alt=""></div>
       <div class="abs" style="left:-49px;top:-22px;width:1817px;height:780px;background:rgba(57,57,57,.38);mix-blend-mode:multiply;pointer-events:none"></div>
       <p class="eco-label" data-split style="left:215px;--d:.5s">Marketing</p>
       <p class="eco-label" data-split style="left:644.5px;--d:.6s">Pop</p>
@@ -244,13 +244,13 @@ img{display:block;max-width:none}
       <p class="nu-word" data-split="lines" style="top:318px;--d:.74s">Wander</p>
     </div>
   </section>
-  <video class="motion" data-a="img" data-motion muted loop playsinline preload="metadata" poster="assets/seed-motion.webp" aria-label="" style="left:0;top:6460px;width:1920px;height:1313px"><source src="assets/seed-motion.mp4" type="video/mp4"></video>
+  <video class="motion" data-a="img" data-motion muted loop playsinline preload="metadata" poster="seed-motion.webp" aria-label="" style="left:0;top:6460px;width:1920px;height:1313px"><source src="seed-motion.mp4" type="video/mp4"></video>
 
   <!-- cameras -->
   <section class="abs" style="left:0;top:7763px;width:1920px;height:936px;overflow:hidden;background:#101010">
-    <div class="cam" data-a="img" style="left:-20px"><img src="assets/cat-film.webp" alt="필름 카메라로 찍은 듯한 고양이"></div>
-    <div class="cam" data-a="img" style="left:624px;--d:.12s"><img src="assets/cat-old.webp" alt="오래된 카메라로 찍은 듯한 고양이"></div>
-    <div class="cam" data-a="img" style="left:1272px;--d:.24s"><img src="assets/cat-instant.webp" alt="즉석 카메라로 찍은 듯한 고양이"></div>
+    <div class="cam" data-a="img" style="left:-20px"><img src="cat-film.webp" alt="필름 카메라로 찍은 듯한 고양이"></div>
+    <div class="cam" data-a="img" style="left:624px;--d:.12s"><img src="cat-old.webp" alt="오래된 카메라로 찍은 듯한 고양이"></div>
+    <div class="cam" data-a="img" style="left:1272px;--d:.24s"><img src="cat-instant.webp" alt="즉석 카메라로 찍은 듯한 고양이"></div>
     <div class="abs" style="left:-124px;top:540px;width:2144px;height:482px;background:linear-gradient(180deg,rgba(16,16,16,0),#101010)"></div>
     <p class="cam-label" data-split style="left:300px;--d:.4s"><b>film</b> camera</p>
     <p class="cam-label" data-split style="left:960.5px;--d:.5s"><b>Old</b> camera</p>
@@ -268,10 +268,10 @@ img{display:block;max-width:none}
       <p class="body dim" data-split="lines" style="--d:.42s">The more words you can include in your prompts, the more refined and expansive the images you can create become.<br>We expand your vocabulary to expand the world of images you can imagine and create.</p>
     </div>
   </section>
-  <video class="motion" data-a="img" data-motion muted loop playsinline preload="metadata" poster="assets/promvoca-motion.webp" aria-label="" style="left:0;top:9158px;width:1920px;height:807px"><source src="assets/promvoca-motion.mp4" type="video/mp4"></video>
+  <video class="motion" data-a="img" data-motion muted loop playsinline preload="metadata" poster="promvoca-motion.webp" aria-label="" style="left:0;top:9158px;width:1920px;height:807px"><source src="promvoca-motion.mp4" type="video/mp4"></video>
 
   <!-- ================= BRAND ================= -->
-  <img class="abs" src="assets/ellipse.webp" alt="" style="left:0;top:10051px;width:1920px;height:407px" data-a="fade">
+  <img class="abs" src="ellipse.webp" alt="" style="left:0;top:10051px;width:1920px;height:407px" data-a="fade">
   <section class="abs stack center" style="left:300px;top:10177px;width:1319px;gap:24px">
     <div class="stack" style="gap:20px">
       <p class="eyebrow" data-split>brand</p>
@@ -284,7 +284,7 @@ img{display:block;max-width:none}
   </section>
   <section class="abs" style="left:0;top:10543px;width:1920px;height:697px">
     <div class="abs" data-a="img" style="left:100px;top:0;width:847px;height:697px;background:#1d1d1d;border-radius:70px">
-      <img class="abs" src="assets/malhae.webp" alt="말해보카 앱 화면" width="743" height="376" style="left:52px;top:54px;border-radius:40px">
+      <img class="abs" src="malhae.webp" alt="말해보카 앱 화면" width="743" height="376" style="left:52px;top:54px;border-radius:40px">
       <p class="abs" data-split="lines" style="left:52px;top:458px;width:743px;font-weight:500;font-size:25px;line-height:1.46;--d:.35s">말해보카는 국내 교육 소프트웨어 개발사 이팝소프트(ePopSoft)가<br>2019년에 출시한 AI 기반의 개인 맞춤형 영어 학습 어플리케이션입니다.<br><b style="font-weight:700;color:#b69fdb">기존의 단어장과의 큰 차이점 중 하나는 문맥에 적절한 어휘를 학습할 수 있게 해 준다는 것</b>이다. 즉 앱에 있는 어휘 퀴즈의 답을 정답/오답으로만 구분하는 것이 아니라 다소 어색한 표현이라는 등의 추가적인 설명을 해준다.</p>
     </div>
     <div class="abs glass" data-a="img" style="left:973px;top:0;width:847px;height:697px;--d:.12s">
@@ -292,30 +292,30 @@ img{display:block;max-width:none}
       <div class="abs" data-a="line-x" style="left:89px;top:364px;width:670px;height:1.5px;background:rgba(255,255,255,.35);--d:.5s"></div>
       <p class="axis-label" data-split="lines" style="left:256px;top:68px;--d:.7s">단어,어휘 위주</p>
       <p class="axis-label" data-split="lines" style="left:694px;top:383px;--d:.75s">주도성</p>
-      <img class="app" data-a="pop" src="assets/app3.webp" alt="말해보카" style="left:539px;top:123px;--d:.8s">
-      <img class="app" data-a="pop" src="assets/app2.webp" alt="" style="left:170px;top:289px;width:109px;height:109px;--d:.9s">
-      <img class="app" data-a="pop" src="assets/app4.webp" alt="" style="left:447px;top:388px;width:109px;height:109px;--d:1s">
-      <img class="app" data-a="pop" src="assets/app5.webp" alt="" style="left:233px;top:457px;--d:1.1s">
-      <img class="app" data-a="pop" src="assets/app1.webp" alt="" style="left:566px;top:512px;--d:1.2s">
+      <img class="app" data-a="pop" src="app3.webp" alt="말해보카" style="left:539px;top:123px;--d:.8s">
+      <img class="app" data-a="pop" src="app2.webp" alt="" style="left:170px;top:289px;width:109px;height:109px;--d:.9s">
+      <img class="app" data-a="pop" src="app4.webp" alt="" style="left:447px;top:388px;width:109px;height:109px;--d:1s">
+      <img class="app" data-a="pop" src="app5.webp" alt="" style="left:233px;top:457px;--d:1.1s">
+      <img class="app" data-a="pop" src="app1.webp" alt="" style="left:566px;top:512px;--d:1.2s">
     </div>
   </section>
 
   <!-- ================= PRODUCT (light) ================= -->
   <div class="bg" style="left:0;top:11380px;width:1923px;height:4139px;background:#dadada"></div>
-  <img class="abs" data-a="img" src="assets/mockup-monitor.webp" alt="ComfyUI 위에서 동작하는 Prom.voca 확장 프로그램 목업" style="left:-28px;top:11411px;width:2036px;height:1241px">
+  <img class="abs" data-a="img" src="mockup-monitor.webp" alt="ComfyUI 위에서 동작하는 Prom.voca 확장 프로그램 목업" style="left:-28px;top:11411px;width:2036px;height:1241px">
   <section class="abs stack" style="left:300px;top:12622px;width:1319px;gap:24px;color:#101010">
     <h2 class="h-intro" data-split>Promvoca brower extention</h2>
     <p class="body" data-split="lines" style="--d:.2s">생성형 이미지 제작이 이루어지는 웹 브라우저에 Prom.voca가 확장 프로그램으로 더해집니다. 사용자는 웹에서 프롬프트를 입력하고<br>수정하며, 원하는 이미지에 가까워질 수 있습니다.</p>
     <p class="body" data-split="lines" style="--d:.32s;color:#636363">Prom.voca is added as an extension to the web browser where generative image creation takes place. Users can input and refine prompts directly on the web, getting closer to their desired image.</p>
   </section>
-  <img class="abs" data-a="img" src="assets/logo-card.webp" alt="Prom.voca 로고" style="left:80px;top:13017px;width:860px;height:316px;border-radius:60px">
-  <img class="abs" data-a="img" src="assets/logo-grid.webp" alt="Prom.voca 심볼 그리드" style="left:80px;top:13368px;width:860px;height:620px;--d:.12s">
-  <img class="abs" data-a="img" src="assets/laptop.webp" alt="Expand, Embody, Empower" style="left:980px;top:13017px;width:860px;height:971px;--d:.2s">
-  <img class="abs" data-a="img" src="assets/slogan.webp" alt="AI는 단어싸움" style="left:80px;top:14023px;width:1760px;height:391px">
+  <img class="abs" data-a="img" src="logo-card.webp" alt="Prom.voca 로고" style="left:80px;top:13017px;width:860px;height:316px;border-radius:60px">
+  <img class="abs" data-a="img" src="logo-grid.webp" alt="Prom.voca 심볼 그리드" style="left:80px;top:13368px;width:860px;height:620px;--d:.12s">
+  <img class="abs" data-a="img" src="laptop.webp" alt="Expand, Embody, Empower" style="left:980px;top:13017px;width:860px;height:971px;--d:.2s">
+  <img class="abs" data-a="img" src="slogan.webp" alt="AI는 단어싸움" style="left:80px;top:14023px;width:1760px;height:391px">
 
   <!-- ================= FEATURE 1: Prompt Writing Training ================= -->
-  <img class="abs" data-a="fade" src="assets/f1-top.webp" alt="Prom.voca 확장 프로그램 메뉴: 프롬프트 학습, 단어 탐색, 단어장" style="left:0;top:14467px;width:1920px;height:1199px">
-  <img class="abs" src="assets/f1-bottom.webp" alt="프롬프트 작성 학습 화면" style="left:0;top:15666px;width:1920px;height:1376px">
+  <img class="abs" data-a="fade" src="f1-top.webp" alt="Prom.voca 확장 프로그램 메뉴: 프롬프트 학습, 단어 탐색, 단어장" style="left:0;top:14467px;width:1920px;height:1199px">
+  <img class="abs" src="f1-bottom.webp" alt="프롬프트 작성 학습 화면" style="left:0;top:15666px;width:1920px;height:1376px">
   <section class="abs stack" style="left:250px;top:15843px;width:1319px;gap:12px">
     <h3 class="feat-title" data-split>Prompt Writing Training</h3>
     <div class="stack feat-body" data-split="lines" style="--d:.25s">
@@ -328,10 +328,10 @@ img{display:block;max-width:none}
     <p class="en">When you input the model you're using and your desired prompt separately in Korean and English, the web browser compares and analyzes the two prompts to generate customized lessons.</p>
   </div>
 
-  <video class="motion" data-a="fade" data-motion muted loop playsinline preload="metadata" poster="assets/grammar-motion.webp" aria-label="문법 오류 교정 기능" style="left:0;top:17042px;width:1920px;height:1075px"><source src="assets/grammar-motion.mp4" type="video/mp4"></video>
+  <video class="motion" data-a="fade" data-motion muted loop playsinline preload="metadata" poster="grammar-motion.webp" aria-label="문법 오류 교정 기능" style="left:0;top:17042px;width:1920px;height:1075px"><source src="grammar-motion.mp4" type="video/mp4"></video>
 
   <!-- ================= FEATURE 2: Word Exploration ================= -->
-  <img class="abs" src="assets/f2.webp" alt="단어 탐색 화면" style="left:0;top:18117px;width:1920px;height:1240px">
+  <img class="abs" src="f2.webp" alt="단어 탐색 화면" style="left:0;top:18117px;width:1920px;height:1240px">
   <section class="abs stack" style="left:249px;top:18295px;width:1319px;gap:12px">
     <h3 class="feat-title" data-split>Word Exploration</h3>
     <div class="stack feat-body" data-split="lines" style="--d:.25s">
@@ -348,10 +348,10 @@ img{display:block;max-width:none}
     <p>You can save words you want to reference<br>to your personal vocabulary notebook.</p>
   </div>
 
-  <video class="motion" data-a="fade" data-motion muted loop playsinline preload="metadata" poster="assets/cat-motion.webp" aria-label="" style="left:0;top:19357px;width:1920px;height:1025px"><source src="assets/cat-motion.mp4" type="video/mp4"></video>
+  <video class="motion" data-a="fade" data-motion muted loop playsinline preload="metadata" poster="cat-motion.webp" aria-label="" style="left:0;top:19357px;width:1920px;height:1025px"><source src="cat-motion.mp4" type="video/mp4"></video>
 
   <!-- ================= FEATURE 3: Vocabulary Notebook ================= -->
-  <img class="abs" src="assets/f3.webp" alt="단어장 화면" style="left:0;top:20382px;width:1920px;height:1696px">
+  <img class="abs" src="f3.webp" alt="단어장 화면" style="left:0;top:20382px;width:1920px;height:1696px">
   <section class="abs stack" style="left:250px;top:20654px;width:1336px;gap:12px">
     <h3 class="feat-title" data-split>Vocabulary Notebook</h3>
     <div class="stack feat-body" data-split="lines" style="--d:.25s">
@@ -372,7 +372,7 @@ img{display:block;max-width:none}
     <p class="en">You can reference prompts where the word was used and their results.</p>
   </div>
 
-  <video class="motion" data-a="fade" data-motion muted loop playsinline preload="metadata" poster="assets/words-review.webp" aria-label="단어 복습 퀴즈 화면" style="left:0;top:22078px;width:1920px;height:1097px"><source src="assets/words-review.mp4" type="video/mp4"></video>
+  <video class="motion" data-a="fade" data-motion muted loop playsinline preload="metadata" poster="words-review.webp" aria-label="단어 복습 퀴즈 화면" style="left:0;top:22078px;width:1920px;height:1097px"><source src="words-review.mp4" type="video/mp4"></video>
 
   <!-- ================= THANK YOU ================= -->
   <footer class="abs" style="left:0;top:23251px;width:1920px;height:534px;background:#101010">

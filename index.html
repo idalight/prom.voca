@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prom.voca — 말해보카 브라우저 확장 프로그램</title>
+<style>
+@font-face{font-family:"Wanted Sans";src:url(fonts/WantedSans-Regular.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(fonts/WantedSans-Medium.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(fonts/WantedSans-SemiBold.woff2) format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(fonts/WantedSans-Bold.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(fonts/WantedSans-ExtraBold.woff2) format("woff2");font-weight:800;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(fonts/WantedSans-Black.woff2) format("woff2");font-weight:900;font-display:swap}
+@font-face{font-family:"Wanted Sans";src:url(fonts/WantedSans-ExtraBlack.woff2) format("woff2");font-weight:950;font-display:swap}
+
+:root{--ease:cubic-bezier(.16,1,.3,1);--z:1}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#101010;overflow-x:hidden;transition:background-color .6s ease}
+body{font-family:"Wanted Sans",system-ui,sans-serif;color:#fff;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:none}
+
+/* Design canvas: 1920px wide, scaled to the viewport */
+#page{position:relative;width:1920px;height:23785px;overflow:hidden;background:#101010;transform-origin:0 0;transform:scale(var(--z)) translateY(-1626px)}
+.abs{position:absolute}
+.bg{position:absolute}
+
+
+/* ---------- typography ---------- */
+.eyebrow{font-weight:600;font-size:24px;color:#b2b2b2;line-height:normal}
+.h2{font-weight:600;font-size:50px;line-height:normal}
+.h-intro{font-weight:600;font-size:43.65px;line-height:normal}
+.body{font-weight:400;font-size:24px;line-height:1.4}
+.dim{color:rgba(255,255,255,.5)}
+.center{text-align:center}
+.stack{display:flex;flex-direction:column}
+
+/* ---------- animations ---------- */
+.w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em;margin-bottom:-.08em}
+.wi{display:inline-block;transform:translateY(110%);opacity:0;transition:transform 1.1s var(--ease),opacity .8s var(--ease);transition-delay:calc(var(--d,0s) + var(--i,0) * 45ms)}
+.in .wi{opacity:1}
+.in .wi{transform:none}
+
+[data-a="fade"]{opacity:0;transform:translateY(28px);filter:blur(6px);transition:opacity 1s var(--ease),transform 1.1s var(--ease),filter 1s var(--ease);transition-delay:var(--d,0s)}
+[data-a="fade"].in{opacity:1;transform:none;filter:none}
+
+[data-a="rise"]{opacity:0;transform:translateY(40%);transition:opacity .9s var(--ease),transform 1.1s var(--ease);transition-delay:var(--d,0s)}
+[data-a="rise"].in{opacity:1;transform:none}
+[data-a="img"]{opacity:0;transform:translateY(60px) scale(.97);transition:opacity 1.2s var(--ease),transform 1.4s var(--ease);transition-delay:var(--d,0s)}
+[data-a="img"].in{opacity:1;transform:none}
+
+[data-a="clip"]{clip-path:inset(12% 6% 12% 6% round 70px);opacity:.2;transition:clip-path 1.5s var(--ease),opacity 1.2s var(--ease);transition-delay:var(--d,0s)}
+[data-a="clip"].in{clip-path:inset(0 0 0 0 round 0);opacity:1}
+
+[data-a="pop"]{opacity:0;transform:scale(.6);transition:opacity .8s var(--ease),transform 1s cubic-bezier(.34,1.56,.64,1);transition-delay:var(--d,0s)}
+[data-a="pop"].in{opacity:1;transform:none}
+
+[data-a="line-y"]{transform:scaleY(0);transform-origin:50% 100%;transition:transform 1.2s var(--ease);transition-delay:var(--d,0s)}
+[data-a="line-x"]{transform:scaleX(0);transform-origin:0 50%;transition:transform 1.2s var(--ease);transition-delay:var(--d,0s)}
+[data-a^="line"].in{transform:none}
+
+/* hero (full-bleed, full screen) */
+.hero{position:relative;height:100vh;height:100svh;min-height:520px;overflow:hidden;background:#101010}
+.hero-zoom{position:absolute;inset:0;transform:scale(1.12);transition:transform 2.6s var(--ease)}
+.loaded .hero-zoom{transform:none}
+.hero-bg{width:100%;height:100%;object-fit:cover;object-position:50% 45%;will-change:transform}
+.hero-shade{position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(180deg,rgba(16,16,16,0),rgba(16,16,16,.55));pointer-events:none}
+.hero-brand{position:absolute;left:11.9vw;bottom:max(7vh,4.5vw);width:72.7vw;will-change:transform,opacity}
+.hero-brand h1{margin:0;line-height:0}
+.hero-logo{width:100%;height:auto;opacity:0;transform:translateY(40%);clip-path:inset(0 0 100% 0);transition:opacity 1.2s var(--ease) .5s,transform 1.5s var(--ease) .5s,clip-path 1.5s var(--ease) .5s}
+.loaded .hero-logo{opacity:1;transform:none;clip-path:inset(-10% -5% -10% -5%)}
+.hero-mark{position:absolute;left:85.6%;top:0;margin-top:-3.08%;width:15.2%;height:auto;transform:translateX(-30px) rotate(-8deg);opacity:0;transition:opacity 1s var(--ease) 1.2s,transform 1.2s var(--ease) 1.2s}
+.loaded .hero-mark{opacity:1;transform:none}
+.loaded #frame{position:relative;margin:var(--g,0px);margin-top:calc(var(--g,0px)*.4);border-radius:40px;overflow:hidden;height:var(--fh,auto)}
+
+@media (prefers-reduced-motion:reduce){
+  .wi,[data-a],.hero-zoom,.hero-bg,.hero-logo,.hero-mark,}
+
+/* ---------- components ---------- */
+.card70{border-radius:70px;overflow:hidden}
+.glass{background:linear-gradient(180deg,rgba(33,33,33,.5) 11.944%,rgba(63,63,63,.5) 115.56%);box-shadow:inset 0 -3.943px 3.943px rgba(142,142,142,.23),inset 0 3.943px 12.813px rgba(207,207,207,.25);border-radius:70px}
+
+.chip{position:relative;display:flex;align-items:center;padding:6.813px 11.355px;border-radius:9.084px;backdrop-filter:blur(4.542px);-webkit-backdrop-filter:blur(4.542px);
+  background:linear-gradient(180deg,rgba(223,129,150,.2) 0%,rgba(102,102,102,0) 100%),rgba(169,164,164,.58);
+  box-shadow:inset 0 -4.542px 6.813px #c7c7c7;font-weight:500;font-size:26.118px;line-height:1.429;letter-spacing:.3787px;color:#f7f7f8;white-space:nowrap;font-feature-settings:"ss10" 1}
+.star{position:relative;width:185.095px;height:185.095px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.star img{position:absolute;inset:1.71%;width:96.58%;height:96.58%;animation:spin 18s linear infinite}
+.star span{position:relative;font-weight:600;font-size:26.118px;line-height:1.429;letter-spacing:.3787px;color:#f7f7f8}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.eco{position:absolute;top:0;width:430px;height:697px;overflow:hidden}
+.eco img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease)}
+.eco:hover img{transform:scale(1.05)}
+.eco-label{position:absolute;top:324px;transform:translateX(-50%);font-weight:500;font-size:42px;white-space:nowrap;pointer-events:none}
+
+.stat-card{position:absolute;width:847px;height:333px}
+.stat-label{position:absolute;left:50px;top:50px;font-weight:500;font-size:28px;line-height:1.35;white-space:nowrap}
+.stat-num{position:absolute;right:50px;bottom:50px;font-weight:800;font-size:92px;line-height:1;white-space:nowrap}
+.quote-box{position:absolute;left:46px;width:755px;height:246px;background:#101010;border-radius:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center}
+.quote-box p{font-weight:500;font-size:28px;line-height:1.3}
+.quote-box small{font-weight:500;font-size:23px;line-height:1.3;color:#b2b2b2}
+
+.nu-card{position:absolute;top:0;width:548px;height:455px}
+.nu-meaning{position:absolute;left:49px;top:56px;font-weight:500;font-size:27px;line-height:1.4;white-space:nowrap}
+.nu-word{position:absolute;left:49px;width:450px;padding:16px 20px;border-radius:18px;background:#0e0e0e;font-weight:500;font-size:36px;line-height:1.35}
+
+.cam{position:absolute;top:0;width:648px;height:1080px;overflow:hidden}
+.cam img{width:100%;height:100%;object-fit:cover}
+.cam-label{position:absolute;top:800px;transform:translateX(-50%);font-weight:700;font-size:51.25px;line-height:1.4;white-space:nowrap}
+.cam-label b{color:#d2b2ff;font-weight:700}
+
+.axis-label{position:absolute;font-weight:600;font-size:21px;line-height:30px;color:#cfcfcf;white-space:nowrap}
+.app{position:absolute;width:110px;height:110px;border-radius:24px;transition:transform .6s var(--ease)}
+.app:hover{transform:scale(1.08)}
+
+.feat-title{font-weight:600;font-size:38px;line-height:normal}
+.feat-body{font-weight:400;font-size:24px;line-height:1.4;color:rgba(255,255,255,.8)}
+.anno{position:absolute;width:470px;display:flex;flex-direction:column;gap:8px;font-weight:400;font-size:20px;line-height:1.35}
+.anno .en{color:rgba(255,255,255,.5)}
+
+.motion{position:absolute;object-fit:cover}
+</style>
+</head>
+<body>
+<header class="hero" aria-label="Prom.voca">
+  <div class="hero-zoom"><img class="hero-bg" src="assets/hero-bg.webp" alt="노트북에서 Prom.voca 확장 프로그램을 사용하는 모습"></div>
+  <div class="hero-shade"></div>
+  <div class="hero-brand">
+    <h1><img class="hero-logo" src="assets/hero-logo.webp" alt="Prom.voca" width="1396" height="242"></h1>
+    <img class="hero-mark" src="assets/hero-mark.webp" alt="" width="212" height="66">
+  </div>
+</header>
+<div id="frame">
+<main id="page">
+
+  <!-- ================= INTRO ================= -->
+  <section class="abs stack" style="left:301px;top:1706px;width:1319px;gap:24px">
+    <h2 class="h-intro" data-split>Prom.voca</h2>
+    <p class="body" data-split="lines" style="--d:.15s">말해보카 Prom.voca는 프롬프트의 기본이 되는 영단어에 집중하여, 사용자가 언제든지 새로운 영단어를 모으고 학습하도록 유도하는 브라우저 확장 프로그램입니다. 세밀한 영단어의 뉘앙스 차이 안내와 추천을 통해 사용자가 더욱 다양하고 정확한 이미지를 만들도록 합니다.</p>
+    <p class="body" data-split="lines" style="--d:.3s;color:#a2a2a2">Prom.voca is a browser extension that focuses on the English vocabulary that forms the foundation of prompts, encouraging users to collect and learn new English words at any time. By providing guidance on the subtle nuances of English words and offering recommendations, it helps users create more diverse and accurate images.</p>
+  </section>
+
+  <!-- cards row -->
+  <section class="abs" style="left:100px;top:2091px;width:1720px;height:638px">
+    <img class="abs card70" data-a="img" src="assets/card-ui.webp" alt="" width="467" height="638" style="left:0;top:0">
+    <div class="abs card70" data-a="img" style="--d:.15s;left:525px;top:0;width:1195px;height:638px">
+      <img src="assets/bunny.webp" alt="핑크색 토끼 이미지" width="1195" height="638">
+      <div class="abs" style="left:54px;top:225.95px;display:flex;align-items:center;gap:10.22px">
+        <span class="chip" data-a="pop" style="--d:.5s">Studio</span>
+        <span class="chip" data-a="pop" style="--d:.58s">portrait of</span>
+        <span class="star" data-a="pop" style="--d:.66s"><img src="assets/star.webp" alt=""><span>Pastel pink</span></span>
+        <span class="chip" data-a="pop" style="--d:.74s">bunny</span>
+        <span class="chip" data-a="pop" style="--d:.82s">soft lighting</span>
+        <span class="chip" data-a="pop" style="--d:.9s">minimalist</span>
+        <span class="chip" data-a="pop" style="--d:.98s">background</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BACKGROUND ================= -->
+  <section class="abs stack" style="left:100px;top:2952px;width:1720px;align-items:center;gap:80px">
+    <div class="stack center" style="width:1325px;gap:24px">
+      <p class="eyebrow" data-split>background</p>
+      <h2 class="h2" data-split style="--d:.1s">The Prompt Economy</h2>
+      <div class="stack" style="gap:12px">
+        <p class="body" data-split="lines" style="--d:.3s">마케팅, 음악, 패션 등 다양한 분야에서 AI가 필수적인 도구로 자리 잡은 지금,<br>생성형 AI의 결과물을 좌우하는 프롬프트의 중요성 또한 커지고 있습니다.</p>
+        <p class="body dim" data-split="lines" style="--d:.42s;line-height:1.3">Now that AI has become an essential tool in various fields<br>the importance of prompts, which determine the output of generative AI, is also growing.</p>
+      </div>
+    </div>
+    <div class="card70" data-a="clip" style="position:relative;width:1720px;height:697px;background:#1d1d1d">
+      <div class="eco" style="left:0"><img src="assets/eco-marketing.webp" alt="" ></div>
+      <div class="eco" style="left:430px"><img src="assets/eco-pop.webp" alt=""></div>
+      <div class="eco" style="left:860px"><img src="assets/eco-fineart.webp" alt=""></div>
+      <div class="eco" style="left:1290px"><img src="assets/eco-fashion.webp" alt=""></div>
+      <div class="abs" style="left:-49px;top:-22px;width:1817px;height:780px;background:rgba(57,57,57,.38);mix-blend-mode:multiply;pointer-events:none"></div>
+      <p class="eco-label" data-split style="left:215px;--d:.5s">Marketing</p>
+      <p class="eco-label" data-split style="left:644.5px;--d:.6s">Pop</p>
+      <p class="eco-label" data-split style="left:1075px;--d:.7s">Fine art</p>
+      <p class="eco-label" data-split style="left:1505px;--d:.8s">Fashion</p>
+    </div>
+  </section>
+
+  <!-- ================= PROBLEM 1 ================= -->
+  <section class="abs stack" style="left:99px;top:4231px;width:1720px;align-items:center;gap:80px">
+    <div class="stack center" style="width:1325px;gap:24px">
+      <p class="eyebrow" data-split>problem</p>
+      <h2 class="h2" data-split style="--d:.1s">AI Language Gap</h2>
+      <div class="stack" style="gap:12px">
+        <p class="body" data-split="lines" style="--d:.3s">대다수의 생성형 AI가 영어를 중심으로 학습되어 있어,<br>비영어권 디자이너들은 프롬프트 작성 과정에서 AI에 의존하게 되고, 같은 의도를 전달하기 위해 더 많은 토큰을 사용해야 했습니다.</p>
+        <p class="body dim" data-split="lines" style="--d:.42s">Since the vast majority of generative AI models are trained primarily on English, non-English-speaking designers have had to rely on AI when writing prompts and use more tokens to convey the same intent.</p>
+      </div>
+    </div>
+    <div style="position:relative;width:1720px;height:697px">
+      <div class="stat-card glass" data-a="img" style="left:0;top:0">
+        <p class="stat-label" data-split="lines" style="--d:.25s">LAION-5B<br>데이터셋 (Stable Diffusion)<br>영어 학습 데이터 비율</p>
+        <p class="stat-num" data-a="rise" data-count="39.7" data-suffix="%" data-dec="1" style="--d:.35s">0.0%</p>
+      </div>
+      <div class="stat-card glass" data-a="img" style="left:0;top:364px;--d:.12s">
+        <p class="stat-label" data-split="lines" style="--d:.25s">OpenAI, Claude<br>cl100k_base<br>영어 대비 한글 토큰 사용량</p>
+        <p class="stat-num" data-split style="--d:.45s">1.3~2.5배</p>
+      </div>
+      <div class="abs" data-a="img" style="left:873px;top:0;width:847px;height:697px;background:#1d1d1d;border-radius:70px;--d:.24s">
+        <p class="abs center" data-split style="--d:.35s;left:0;right:0;top:50px;font-weight:600;font-size:32px;line-height:1.2;color:#b2b2b2">언어적 차이로 인한 어려움</p>
+        <div class="quote-box" style="top:128px;--d:.5s" data-split="lines">
+          <p>‘영어로 프롬프트를 써야 하는데..<br>잘 모르니까 그냥 다른 AI가 써준 프롬프트를<br>복붙해서 썼어요’</p>
+          <small>디자이너 김00</small>
+        </div>
+        <div class="quote-box" style="top:401px;--d:.65s" data-split="lines">
+          <p>‘만들고 싶은 이미지가 있어도, 그거에 맞는 뉘앙스를<br>찾느라 토큰을 더 많이 썼던 거 같아요’</p>
+          <small>디자이너 안00</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROBLEM 2 ================= -->
+  <div class="bg" style="left:-17px;top:5460px;width:1954px;height:2802px;background:#1d1d1d"></div>
+  <section class="abs stack center" style="left:300px;top:5596px;width:1319px;gap:24px">
+    <div class="stack" style="gap:20px">
+      <p class="eyebrow" data-split>problem</p>
+      <h2 class="h2" data-split style="--d:.1s">Nuances That Make Prompting Difficult</h2>
+    </div>
+    <div class="stack" style="gap:12px">
+      <p class="body" data-split="lines" style="--d:.3s">비영어권 디자이너들이 프롬프트 작성에 어려움을 겪는 이유는,<br>같은 영단어라도 언어와 문화에 따라 받아들여지는 뉘앙스가 다르기 때문입니다.</p>
+      <p class="body dim" data-split="lines" style="--d:.42s">Non-English-speaking designers struggle with prompt writing because the nuance of the same English words is perceived differently depending on language and cultural context.</p>
+    </div>
+  </section>
+  <section class="abs" style="left:0;top:5975px;width:1920px;height:455px">
+    <div class="nu-card glass" data-a="img" style="left:100px">
+      <p class="nu-meaning" data-split style="--d:.2s">사전적 의미: "작다"</p>
+      <p class="nu-word" data-split="lines" style="top:116px;--d:.3s">Small</p>
+      <p class="nu-word" data-split="lines" style="top:217px;--d:.4s">Tiny</p>
+      <p class="nu-word" data-split="lines" style="top:318px;--d:.5s">Little</p>
+    </div>
+    <div class="nu-card glass" data-a="img" style="left:686px;--d:.12s">
+      <p class="nu-meaning" data-split style="--d:.2s">사전적 의미: "오래된"</p>
+      <p class="nu-word" data-split="lines" style="top:116px;--d:.42s">Old</p>
+      <p class="nu-word" data-split="lines" style="top:217px;--d:.52s">Aged</p>
+      <p class="nu-word" data-split="lines" style="top:318px;--d:.62s">Ancient</p>
+    </div>
+    <div class="nu-card glass" data-a="img" style="left:1272px;--d:.24s">
+      <p class="nu-meaning" data-split style="--d:.2s">사전적 의미: "걷다"</p>
+      <p class="nu-word" data-split="lines" style="top:116px;--d:.54s">Walk</p>
+      <p class="nu-word" data-split="lines" style="top:217px;--d:.64s">Stroll</p>
+      <p class="nu-word" data-split="lines" style="top:318px;--d:.74s">Wander</p>
+    </div>
+  </section>
+  <video class="motion" data-a="img" data-motion muted loop playsinline preload="metadata" poster="assets/seed-motion.webp" aria-label="" style="left:0;top:6460px;width:1920px;height:1313px"><source src="assets/seed-motion.mp4" type="video/mp4"></video>
+
+  <!-- cameras -->
+  <section class="abs" style="left:0;top:7763px;width:1920px;height:936px;overflow:hidden;background:#101010">
+    <div class="cam" data-a="img" style="left:-20px"><img src="assets/cat-film.webp" alt="필름 카메라로 찍은 듯한 고양이"></div>
+    <div class="cam" data-a="img" style="left:624px;--d:.12s"><img src="assets/cat-old.webp" alt="오래된 카메라로 찍은 듯한 고양이"></div>
+    <div class="cam" data-a="img" style="left:1272px;--d:.24s"><img src="assets/cat-instant.webp" alt="즉석 카메라로 찍은 듯한 고양이"></div>
+    <div class="abs" style="left:-124px;top:540px;width:2144px;height:482px;background:linear-gradient(180deg,rgba(16,16,16,0),#101010)"></div>
+    <p class="cam-label" data-split style="left:300px;--d:.4s"><b>film</b> camera</p>
+    <p class="cam-label" data-split style="left:960.5px;--d:.5s"><b>Old</b> camera</p>
+    <p class="cam-label" data-split style="left:1596px;--d:.6s"><b>Instant</b> camera</p>
+  </section>
+
+  <!-- ================= PROJECT GOAL ================= -->
+  <section class="abs stack center" style="left:300px;top:8848px;width:1319px;gap:24px">
+    <div class="stack" style="gap:20px">
+      <p class="eyebrow" data-split>project goal</p>
+      <h2 class="h2" data-split style="--d:.1s">AI는 단어싸움</h2>
+    </div>
+    <div class="stack" style="gap:12px">
+      <p class="body" data-split="lines" style="--d:.3s">프롬프트에 담을 수 있는 단어가 많아질수록, 만들어낼 수 있는 이미지는 더욱 섬세하고 넓어집니다.<br>우리는 당신의 단어를 확장해, 당신이 상상하고 그릴 수 있는 이미지의 세계를 확장합니다.</p>
+      <p class="body dim" data-split="lines" style="--d:.42s">The more words you can include in your prompts, the more refined and expansive the images you can create become.<br>We expand your vocabulary to expand the world of images you can imagine and create.</p>
+    </div>
+  </section>
+  <video class="motion" data-a="img" data-motion muted loop playsinline preload="metadata" poster="assets/promvoca-motion.webp" aria-label="" style="left:0;top:9158px;width:1920px;height:807px"><source src="assets/promvoca-motion.mp4" type="video/mp4"></video>
+
+  <!-- ================= BRAND ================= -->
+  <img class="abs" src="assets/ellipse.webp" alt="" style="left:0;top:10051px;width:1920px;height:407px" data-a="fade">
+  <section class="abs stack center" style="left:300px;top:10177px;width:1319px;gap:24px">
+    <div class="stack" style="gap:20px">
+      <p class="eyebrow" data-split>brand</p>
+      <h2 class="h2" data-split style="--d:.1s">뉘앙스부터 유사어까지, 말해보카</h2>
+    </div>
+    <div class="stack" style="gap:12px">
+      <p class="body" data-split="lines" style="--d:.3s">1년에 최대 사용자에게 9,200개의 어휘 습득하게 하는 말해보카.<br>정답만 알려주는 것이 아니라, 단어가 가진 뉘앙스와 확장성을 함께 이야기하며 진짜 내 것으로 만듭니다.</p>
+      <p class="body dim" data-split="lines" style="--d:.42s">Malhaeboca helps users acquire up to 9,200 words in a year. Rather than just providing the correct answers,<br>we explore the nuances and versatility of each word, helping you truly make it your own.</p>
+    </div>
+  </section>
+  <section class="abs" style="left:0;top:10543px;width:1920px;height:697px">
+    <div class="abs" data-a="img" style="left:100px;top:0;width:847px;height:697px;background:#1d1d1d;border-radius:70px">
+      <img class="abs" src="assets/malhae.webp" alt="말해보카 앱 화면" width="743" height="376" style="left:52px;top:54px;border-radius:40px">
+      <p class="abs" data-split="lines" style="left:52px;top:458px;width:743px;font-weight:500;font-size:25px;line-height:1.46;--d:.35s">말해보카는 국내 교육 소프트웨어 개발사 이팝소프트(ePopSoft)가<br>2019년에 출시한 AI 기반의 개인 맞춤형 영어 학습 어플리케이션입니다.<br><b style="font-weight:700;color:#b69fdb">기존의 단어장과의 큰 차이점 중 하나는 문맥에 적절한 어휘를 학습할 수 있게 해 준다는 것</b>이다. 즉 앱에 있는 어휘 퀴즈의 답을 정답/오답으로만 구분하는 것이 아니라 다소 어색한 표현이라는 등의 추가적인 설명을 해준다.</p>
+    </div>
+    <div class="abs glass" data-a="img" style="left:973px;top:0;width:847px;height:697px;--d:.12s">
+      <div class="abs" data-a="line-y" style="left:424px;top:66px;width:1.5px;height:587px;background:rgba(255,255,255,.35);--d:.4s"></div>
+      <div class="abs" data-a="line-x" style="left:89px;top:364px;width:670px;height:1.5px;background:rgba(255,255,255,.35);--d:.5s"></div>
+      <p class="axis-label" data-split="lines" style="left:256px;top:68px;--d:.7s">단어,어휘 위주</p>
+      <p class="axis-label" data-split="lines" style="left:694px;top:383px;--d:.75s">주도성</p>
+      <img class="app" data-a="pop" src="assets/app3.webp" alt="말해보카" style="left:539px;top:123px;--d:.8s">
+      <img class="app" data-a="pop" src="assets/app2.webp" alt="" style="left:170px;top:289px;width:109px;height:109px;--d:.9s">
+      <img class="app" data-a="pop" src="assets/app4.webp" alt="" style="left:447px;top:388px;width:109px;height:109px;--d:1s">
+      <img class="app" data-a="pop" src="assets/app5.webp" alt="" style="left:233px;top:457px;--d:1.1s">
+      <img class="app" data-a="pop" src="assets/app1.webp" alt="" style="left:566px;top:512px;--d:1.2s">
+    </div>
+  </section>
+
+  <!-- ================= PRODUCT (light) ================= -->
+  <div class="bg" style="left:0;top:11380px;width:1923px;height:4139px;background:#dadada"></div>
+  <img class="abs" data-a="img" src="assets/mockup-monitor.webp" alt="ComfyUI 위에서 동작하는 Prom.voca 확장 프로그램 목업" style="left:-28px;top:11411px;width:2036px;height:1241px">
+  <section class="abs stack" style="left:300px;top:12622px;width:1319px;gap:24px;color:#101010">
+    <h2 class="h-intro" data-split>Promvoca brower extention</h2>
+    <p class="body" data-split="lines" style="--d:.2s">생성형 이미지 제작이 이루어지는 웹 브라우저에 Prom.voca가 확장 프로그램으로 더해집니다. 사용자는 웹에서 프롬프트를 입력하고<br>수정하며, 원하는 이미지에 가까워질 수 있습니다.</p>
+    <p class="body" data-split="lines" style="--d:.32s;color:#636363">Prom.voca is added as an extension to the web browser where generative image creation takes place. Users can input and refine prompts directly on the web, getting closer to their desired image.</p>
+  </section>
+  <img class="abs" data-a="img" src="assets/logo-card.webp" alt="Prom.voca 로고" style="left:80px;top:13017px;width:860px;height:316px;border-radius:60px">
+  <img class="abs" data-a="img" src="assets/logo-grid.webp" alt="Prom.voca 심볼 그리드" style="left:80px;top:13368px;width:860px;height:620px;--d:.12s">
+  <img class="abs" data-a="img" src="assets/laptop.webp" alt="Expand, Embody, Empower" style="left:980px;top:13017px;width:860px;height:971px;--d:.2s">
+  <img class="abs" data-a="img" src="assets/slogan.webp" alt="AI는 단어싸움" style="left:80px;top:14023px;width:1760px;height:391px">
+
+  <!-- ================= FEATURE 1: Prompt Writing Training ================= -->
+  <img class="abs" data-a="fade" src="assets/f1-top.webp" alt="Prom.voca 확장 프로그램 메뉴: 프롬프트 학습, 단어 탐색, 단어장" style="left:0;top:14467px;width:1920px;height:1199px">
+  <img class="abs" src="assets/f1-bottom.webp" alt="프롬프트 작성 학습 화면" style="left:0;top:15666px;width:1920px;height:1376px">
+  <section class="abs stack" style="left:250px;top:15843px;width:1319px;gap:12px">
+    <h3 class="feat-title" data-split>Prompt Writing Training</h3>
+    <div class="stack feat-body" data-split="lines" style="--d:.25s">
+      <p>프롬프트를 작성하며, 내가 의도한 이미지를 더 정확하게 표현할 수 있는 단어와 표현을 학습해보세요.</p>
+      <p>While writing prompts, learn words and expressions that can more accurately express the image I intend.</p>
+    </div>
+  </section>
+  <div class="anno" data-split="lines" style="left:1372px;top:16479px">
+    <p>내가 사용하는 모델과 원하는 프롬프트를 한국어·영어로<br>각각 입력하면, 웹 브라우저가 두 프롬프트를 비교·분석해<br>맞춤형 강의를 생성합니다.</p>
+    <p class="en">When you input the model you're using and your desired prompt separately in Korean and English, the web browser compares and analyzes the two prompts to generate customized lessons.</p>
+  </div>
+
+  <video class="motion" data-a="fade" data-motion muted loop playsinline preload="metadata" poster="assets/grammar-motion.webp" aria-label="문법 오류 교정 기능" style="left:0;top:17042px;width:1920px;height:1075px"><source src="assets/grammar-motion.mp4" type="video/mp4"></video>
+
+  <!-- ================= FEATURE 2: Word Exploration ================= -->
+  <img class="abs" src="assets/f2.webp" alt="단어 탐색 화면" style="left:0;top:18117px;width:1920px;height:1240px">
+  <section class="abs stack" style="left:249px;top:18295px;width:1319px;gap:12px">
+    <h3 class="feat-title" data-split>Word Exploration</h3>
+    <div class="stack feat-body" data-split="lines" style="--d:.25s">
+      <p>레퍼런스 사진만 수집하지 말고, 그 안에 담긴 단어와 표현도 함께 모아보세요.</p>
+      <p>Don't just collect reference photos; also gather the words and expressions contained within them.</p>
+    </div>
+  </section>
+  <div class="anno" data-split="lines" style="left:1389px;top:18855px;width:462px">
+    <p>원하는 레퍼런스 사진 위에 드래그하면,<br>사진을 구성하는 핵심 영단어와 표현을 분석해줍니다.</p>
+    <p>When you drag over your desired reference photo, it analyzes the key English words and expressions that compose the image.</p>
+  </div>
+  <div class="anno" data-split="lines" style="left:1389px;top:19153px;width:462px">
+    <p>참고하고 싶은 단어들을 단어장에 저장할 수 있습니다.</p>
+    <p>You can save words you want to reference<br>to your personal vocabulary notebook.</p>
+  </div>
+
+  <video class="motion" data-a="fade" data-motion muted loop playsinline preload="metadata" poster="assets/cat-motion.webp" aria-label="" style="left:0;top:19357px;width:1920px;height:1025px"><source src="assets/cat-motion.mp4" type="video/mp4"></video>
+
+  <!-- ================= FEATURE 3: Vocabulary Notebook ================= -->
+  <img class="abs" src="assets/f3.webp" alt="단어장 화면" style="left:0;top:20382px;width:1920px;height:1696px">
+  <section class="abs stack" style="left:250px;top:20654px;width:1336px;gap:12px">
+    <h3 class="feat-title" data-split>Vocabulary Notebook</h3>
+    <div class="stack feat-body" data-split="lines" style="--d:.25s">
+      <p>영단어의 숨은 의미부터 유의어, 실제 사용 사례까지 한눈에 확인해보세요.</p>
+      <p>See everything at a glance—from the hidden meanings of English words to their synonyms and real-world usage examples.</p>
+    </div>
+  </section>
+  <div class="anno" data-split="lines" style="left:1206px;top:21054px">
+    <p>전에 배운 단어를 간단한 퀴즈로 복습할 수 있어요.</p>
+    <p class="en">You can review words you learned before through simple quizzes.</p>
+  </div>
+  <div class="anno" data-split="lines" style="left:1206px;top:21528px">
+    <p>지금 보고 있는 단어와 비슷한 표현을 찾아볼 수 있어요.</p>
+    <p class="en">You can find similar expressions to the word you're currently viewing.</p>
+  </div>
+  <div class="anno" data-split="lines" style="left:1206px;top:21777px">
+    <p>단어가 쓰인 프롬프트와 결과물을 참고할 수 있어요.</p>
+    <p class="en">You can reference prompts where the word was used and their results.</p>
+  </div>
+
+  <video class="motion" data-a="fade" data-motion muted loop playsinline preload="metadata" poster="assets/words-review.webp" aria-label="단어 복습 퀴즈 화면" style="left:0;top:22078px;width:1920px;height:1097px"><source src="assets/words-review.mp4" type="video/mp4"></video>
+
+  <!-- ================= THANK YOU ================= -->
+  <footer class="abs" style="left:0;top:23251px;width:1920px;height:534px;background:#101010">
+    <p class="abs h-intro" data-split style="left:300px;top:212px;width:1319px">Thank you for Watching!</p>
+    <p class="abs" data-split="lines" style="left:300px;top:303px;font-size:33.65px;color:#727272;--d:.35s">designed by Lee Dahyeon</p>
+  </footer>
+</main>
+</div>
+
+<script>
+(function(){
+  const page=document.getElementById('page');
+  const W=1920;
+  function fit(){
+    const vw=document.documentElement.clientWidth;
+    const g=Math.round(Math.min(140,Math.max(16,vw*0.07)));   // side margin
+    document.documentElement.style.setProperty('--g',g+'px');
+    const z=(vw-2*g)/W;
+    document.documentElement.style.setProperty('--z',z);
+    document.documentElement.style.setProperty('--fh',((23785-1626)*z)+'px');
+  }
+  fit(); addEventListener('resize',fit);
+
+  // motion clips: start from the first frame when they scroll in, pause when off-screen
+  const vids=[...document.querySelectorAll('video[data-motion]')];
+  if('IntersectionObserver' in window){
+    const vio=new IntersectionObserver(es=>es.forEach(e=>{
+      const v=e.target;
+      if(e.isIntersecting){ if(!v.dataset.started){v.currentTime=0;v.dataset.started=1;} const p=v.play(); if(p&&p.catch)p.catch(()=>{}); }
+      else v.pause();
+    }),{threshold:0.25});
+    vids.forEach(v=>{v.preload='auto';vio.observe(v);});
+  } else vids.forEach(v=>{v.autoplay=true;v.play();});
+
+  // split text into masked words; data-split="lines" staggers line by line
+  const splitEls=[...document.querySelectorAll('[data-split]')];
+  splitEls.forEach(el=>{
+    let i=0;
+    const walk=node=>{
+      [...node.childNodes].forEach(n=>{
+        if(n.nodeType===3){
+          const frag=document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(part=>{
+            if(!part) return;
+            if(/^\s+$/.test(part)){frag.appendChild(document.createTextNode(' '));return;}
+            const w=document.createElement('span');w.className='w';
+            const wi=document.createElement('span');wi.className='wi';wi.style.setProperty('--i',i++);
+            wi.textContent=part;w.appendChild(wi);frag.appendChild(w);
+          });
+          n.replaceWith(frag);
+        } else if(n.nodeType===1 && n.tagName!=='BR'){ walk(n); }
+      });
+    };
+    walk(el);
+  });
+  const lineIndex=()=>{
+    splitEls.filter(el=>el.dataset.split==='lines').forEach(el=>{
+      // number lines per paragraph block so each block starts right after the previous one
+      let line=-1,last=null,base=0;
+      const blocks=el.querySelectorAll('p,small').length?[...el.querySelectorAll('p,small')]:[el];
+      blocks.forEach(b=>{
+        last=null;
+        b.querySelectorAll('.wi').forEach(wi=>{
+          const top=Math.round(wi.parentNode.offsetTop);
+          if(top!==last){line++;last=top;}
+          wi.style.setProperty('--i',line*2);
+        });
+      });
+    });
+  };
+  lineIndex();
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(lineIndex);
+
+  // count-up for stat numbers
+  function countUp(el){
+    const to=parseFloat(el.dataset.count),dec=+el.dataset.dec||0,suf=el.dataset.suffix||'';
+    const t0=performance.now(),dur=1600;
+    const step=t=>{const p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,4);
+      el.textContent=(to*e).toFixed(dec)+suf; if(p<1) requestAnimationFrame(step);};
+    requestAnimationFrame(step);
+  }
+
+  const targets=document.querySelectorAll('[data-split],[data-a],[data-count]');
+  if(!('IntersectionObserver' in window)){targets.forEach(t=>t.classList.add('in'));return;}
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(en=>{
+      if(!en.isIntersecting) return;
+      const el=en.target; el.classList.add('in'); io.unobserve(el);
+      if(el.dataset.count) countUp(el);
+    });
+  },{rootMargin:'0px 0px -12% 0px',threshold:0.01});
+  targets.forEach(t=>io.observe(t));
+
+  // margin colour follows the section background under the middle of the screen
+  const zones=[[0,5460,'#101010'],[5460,8262,'#1d1d1d'],[8262,11380,'#101010'],[11380,15666,'#d9d9d9'],
+    [15666,17042,['#150a22','#8062aa']],[17042,18117,'#8767b2'],[18117,20382,'#181818'],
+    [20382,22078,'#101010'],[22078,23175,'#1d1d1d'],[23175,1e9,'#101010']];
+  const frame=document.getElementById('frame'), root=document.documentElement;
+  const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+  const mix=(a,b,t)=>{const A=hex(a),B=hex(b);return 'rgb('+A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')+')';};
+  const tint=()=>{
+    const z=parseFloat(getComputedStyle(root).getPropertyValue('--z'))||1;
+    const y=(scrollY+innerHeight/2-frame.offsetTop)/z+1626;
+    if(scrollY+innerHeight/2<frame.offsetTop){root.style.backgroundColor='#101010';return;}
+    const zn=zones.find(q=>y>=q[0]&&y<q[1])||zones[zones.length-1];
+    root.style.backgroundColor=Array.isArray(zn[2])?mix(zn[2][0],zn[2][1],Math.min(1,Math.max(0,(y-zn[0])/(zn[1]-zn[0])))):zn[2];
+  };
+  addEventListener('scroll',()=>requestAnimationFrame(tint),{passive:true}); addEventListener('resize',tint); tint();
+
+  // hero parallax: image drifts slower, logo lifts & fades as you scroll away
+  const heroImg=document.querySelector('.hero-bg'), brand=document.querySelector('.hero-brand'), hero=document.querySelector('.hero');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const para=()=>{ if(reduce) return;
+    const h=hero.offsetHeight, y=Math.min(scrollY,h);
+    heroImg.style.transform='translateY('+(y*0.35)+'px) scale('+(1+y/h*0.08)+')';
+    brand.style.transform='translateY('+(-y*0.25)+'px)';
+    brand.style.opacity=String(1-Math.max(0,(y/h-0.25))*1.6);
+  };
+  addEventListener('scroll',()=>requestAnimationFrame(para),{passive:true}); para();
+
+  addEventListener('load',()=>document.body.classList.add('loaded'));
+  setTimeout(()=>document.body.classList.add('loaded'),1200);
+})();
+</script>
+</body>
+</html>

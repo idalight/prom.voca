@@ -58,19 +58,25 @@ img{display:block;max-width:none}
 [data-a="line-x"]{transform:scaleX(0);transform-origin:0 50%;transition:transform 1.2s var(--ease);transition-delay:var(--d,0s)}
 [data-a^="line"].in{transform:none}
 
+/* replay button */
+.replay{position:absolute;left:300px;top:390px;display:inline-flex;align-items:center;gap:14px;padding:18px 30px;border-radius:999px;border:1.5px solid rgba(255,255,255,.25);background:rgba(255,255,255,.04);color:#fff;font:500 26px/1 "Wanted Sans",sans-serif;cursor:pointer;transition:background .4s var(--ease),border-color .4s var(--ease)}
+.replay:hover{background:rgba(117,50,221,.35);border-color:#a97cf0}
+.replay svg{width:26px;height:26px;transition:transform .8s var(--ease)}
+.replay:hover svg{transform:rotate(-360deg)}
+
 /* hero (full-bleed, full screen) */
 .hero{position:relative;height:100vh;height:100svh;min-height:520px;overflow:hidden;background:#101010}
 .hero-zoom{position:absolute;inset:0;transform:scale(1.12);transition:transform 2.6s var(--ease)}
-.loaded .hero-zoom{transform:none}
+.hero.on .hero-zoom{transform:none}
 .hero-bg{width:100%;height:100%;object-fit:cover;object-position:50% 45%;will-change:transform}
 .hero-shade{position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(180deg,rgba(16,16,16,0),rgba(16,16,16,.55));pointer-events:none}
 .hero-brand{position:absolute;left:11.9vw;bottom:max(7vh,4.5vw);width:72.7vw;will-change:transform,opacity}
 .hero-brand h1{margin:0;line-height:0}
 .hero-logo{width:100%;height:auto;opacity:0;transform:translateY(40%);clip-path:inset(0 0 100% 0);transition:opacity 1.2s var(--ease) .5s,transform 1.5s var(--ease) .5s,clip-path 1.5s var(--ease) .5s}
-.loaded .hero-logo{opacity:1;transform:none;clip-path:inset(-10% -5% -10% -5%)}
+.hero.on .hero-logo{opacity:1;transform:none;clip-path:inset(-10% -5% -10% -5%)}
 .hero-mark{position:absolute;left:85.6%;top:0;margin-top:-3.08%;width:15.2%;height:auto;transform:translateX(-30px) rotate(-8deg);opacity:0;transition:opacity 1s var(--ease) 1.2s,transform 1.2s var(--ease) 1.2s}
-.loaded .hero-mark{opacity:1;transform:none}
-.loaded #frame{position:relative;margin:var(--g,0px);margin-top:calc(var(--g,0px)*.4);border-radius:40px;overflow:hidden;height:var(--fh,auto)}
+.hero.on .hero-mark{opacity:1;transform:none}
+#frame{position:relative;margin:var(--g,0px);margin-top:calc(var(--g,0px)*.4);border-radius:40px;overflow:hidden;height:var(--fh,auto)}
 
 @media (prefers-reduced-motion:reduce){
   .wi,[data-a],.hero-zoom,.hero-bg,.hero-logo,.hero-mark,}
@@ -378,6 +384,7 @@ img{display:block;max-width:none}
   <footer class="abs" style="left:0;top:23251px;width:1920px;height:534px;background:#101010">
     <p class="abs h-intro" data-split style="left:300px;top:212px;width:1319px">Thank you for Watching!</p>
     <p class="abs" data-split="lines" style="left:300px;top:303px;font-size:33.65px;color:#727272;--d:.35s">designed by Lee Dahyeon</p>
+    <button class="replay" type="button" data-a="fade" style="--d:.6s" aria-label="처음부터 다시 보기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v6h6"/></svg>처음부터 다시 보기</button>
   </footer>
 </main>
 </div>
@@ -401,8 +408,8 @@ img{display:block;max-width:none}
   if('IntersectionObserver' in window){
     const vio=new IntersectionObserver(es=>es.forEach(e=>{
       const v=e.target;
-      if(e.isIntersecting){ if(!v.dataset.started){v.currentTime=0;v.dataset.started=1;} const p=v.play(); if(p&&p.catch)p.catch(()=>{}); }
-      else v.pause();
+      if(e.isIntersecting){ if(!v.dataset.on){v.currentTime=0;v.dataset.on=1;} const p=v.play(); if(p&&p.catch)p.catch(()=>{}); }
+      else if(e.intersectionRatio===0){ v.pause(); delete v.dataset.on; }
     }),{threshold:0.25});
     vids.forEach(v=>{v.preload='auto';vio.observe(v);});
   } else vids.forEach(v=>{v.autoplay=true;v.play();});
@@ -460,11 +467,38 @@ img{display:block;max-width:none}
   const io=new IntersectionObserver(entries=>{
     entries.forEach(en=>{
       if(!en.isIntersecting) return;
-      const el=en.target; el.classList.add('in'); io.unobserve(el);
+      const el=en.target; if(el.classList.contains('in')) return; el.classList.add('in');
       if(el.dataset.count) countUp(el);
     });
   },{rootMargin:'0px 0px -12% 0px',threshold:0.01});
   targets.forEach(t=>io.observe(t));
+  // once an element is completely off-screen, reset it so it animates again next time it scrolls in
+  const resetIO=new IntersectionObserver(entries=>{
+    entries.forEach(en=>{
+      if(en.isIntersecting) return;
+      const el=en.target; el.classList.remove('in');
+      if(el.dataset.count) el.textContent=(0).toFixed(+el.dataset.dec||0)+(el.dataset.suffix||'');
+    });
+  },{rootMargin:'0px',threshold:0});
+  targets.forEach(t=>resetIO.observe(t));
+
+  // hero replays every time you come back to the top
+  const heroEl=document.querySelector('.hero');
+  new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting && e.intersectionRatio>0.6) heroEl.classList.add('on');
+    else if(!e.isIntersecting) heroEl.classList.remove('on');
+  }),{threshold:[0,0.6]}).observe(heroEl);
+
+  // replay button
+  document.querySelector('.replay').addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
+
+  // exhibition mode: open the page with #exhibit and it returns to the top after 60s without input
+  if(location.hash==='#exhibit'){
+    let idle; const IDLE=60000;
+    const arm=()=>{clearTimeout(idle); idle=setTimeout(()=>scrollTo({top:0,behavior:'smooth'}),IDLE);};
+    ['scroll','wheel','pointerdown','keydown','touchstart','mousemove'].forEach(ev=>addEventListener(ev,arm,{passive:true}));
+    arm();
+  }
 
   // margin colour follows the section background under the middle of the screen
   const zones=[[0,5460,'#101010'],[5460,8262,'#1d1d1d'],[8262,11380,'#101010'],[11380,15666,'#d9d9d9'],
@@ -493,8 +527,7 @@ img{display:block;max-width:none}
   };
   addEventListener('scroll',()=>requestAnimationFrame(para),{passive:true}); para();
 
-  addEventListener('load',()=>document.body.classList.add('loaded'));
-  setTimeout(()=>document.body.classList.add('loaded'),1200);
+  addEventListener('load',()=>{document.body.classList.add('loaded'); if(scrollY<innerHeight*.4) heroEl.classList.add('on');});
 })();
 </script>
 </body>
